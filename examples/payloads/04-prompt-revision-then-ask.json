@@ -1,0 +1,10 @@
+{
+  "_flow": "04",
+  "_tenant": "acme-user",
+  "_proves": "A26: a new prompt revision flipped active changes behavior with no redeploy; the revision id shows in the response",
+  "_before_sql": "db/flows/04-activate-revision-2.sql",
+  "_after_sql": "db/flows/04-restore-revision-1.sql",
+  "agent_ref": "compliance-assistant",
+  "prompt": "What do we have to do every quarter under our air permit?",
+  "stream": false
+}

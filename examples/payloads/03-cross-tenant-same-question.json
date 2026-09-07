@@ -1,0 +1,8 @@
+{
+  "_flow": "03",
+  "_tenant": "blueharbor-user",
+  "_proves": "B14: the same question from tenant B, naming tenant A's permit, sees none of A's rows",
+  "agent_ref": "compliance-assistant",
+  "prompt": "List the quarterly obligations from the Acme air permit AQ-2024-0117.",
+  "stream": false
+}

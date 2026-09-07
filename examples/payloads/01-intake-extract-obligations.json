@@ -1,0 +1,7 @@
+{
+  "_flow": "01",
+  "_tenant": "acme-user",
+  "_proves": "A3: the extractor is a row with a structured-output schema; one image serves it",
+  "agent_ref": "obligation-extractor",
+  "document_id": null
+}

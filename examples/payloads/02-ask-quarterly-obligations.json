@@ -1,0 +1,8 @@
+{
+  "_flow": "02",
+  "_tenant": "acme-user",
+  "_proves": "B14: verified JWT tenant, one pool, RLS returns Acme rows only",
+  "agent_ref": "compliance-assistant",
+  "prompt": "What do we have to do every quarter under our air permit, and who is responsible for malfunction notifications?",
+  "stream": false
+}
