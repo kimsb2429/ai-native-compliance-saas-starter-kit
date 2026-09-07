@@ -5,6 +5,13 @@
 
 TF_DIR := infra/terraform
 REGION ?= us-east-1
+
+# `neon link` writes DATABASE_URL / DATABASE_URL_UNPOOLED / NEON_BRANCH to .env.local.
+# When present, Terraform uses that project instead of creating one, and seed/demo
+# use the same owner connection string. Otherwise NEON_API_KEY must be set.
+-include .env.local
+export TF_VAR_database_url ?= $(DATABASE_URL_UNPOOLED)
+export DATABASE_URL ?= $(DATABASE_URL_UNPOOLED)
 IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo latest)
 FLOW ?= 02
 
