@@ -34,6 +34,12 @@ def pool() -> ConnectionPool:
             min_size=1,
             max_size=10,
             kwargs={"row_factory": dict_row, "autocommit": False},
+            # Serverless Postgres suspends when idle and drops the sockets a warm
+            # pool is holding. Validate every connection on checkout and retire
+            # idle ones early, so a resumed database never sees a dead socket.
+            check=ConnectionPool.check_connection,
+            max_idle=60,
+            reconnect_timeout=30,
             open=True,
         )
         logger.info("db pool opened (min 1, max 10)")
@@ -47,10 +53,19 @@ def close_pool() -> None:
         _pool = None
 
 
+def _connection_with_retry():
+    """Check out a connection; if the first checkout fails on a dead socket, try once more."""
+    try:
+        return pool().connection()
+    except psycopg.OperationalError:
+        logger.warning("connection checkout failed once; retrying")
+        return pool().connection()
+
+
 @contextmanager
 def tenant_txn(org_id: UUID) -> Iterator[psycopg.Cursor]:
     """A transaction in which RLS sees exactly one tenant."""
-    with pool().connection() as conn:
+    with _connection_with_retry() as conn:
         with conn.transaction():
             with conn.cursor() as cur:
                 cur.execute("select set_config('app.org_id', %s, true)", (str(org_id),))
@@ -60,7 +75,7 @@ def tenant_txn(org_id: UUID) -> Iterator[psycopg.Cursor]:
 @contextmanager
 def platform_txn() -> Iterator[psycopg.Cursor]:
     """A transaction for the shared platform tables (no tenant setting)."""
-    with pool().connection() as conn:
+    with _connection_with_retry() as conn:
         with conn.transaction():
             with conn.cursor() as cur:
                 yield cur
