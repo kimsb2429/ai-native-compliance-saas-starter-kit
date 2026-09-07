@@ -80,8 +80,7 @@ def _model(model_id: str) -> BedrockModel:
 def build_agent(agent_ref: str, org_id: UUID, session_id: str) -> BuiltAgent:
     definition = load_definition(agent_ref)
     prompt = get_prompt(definition.prompt_slug)
-    model_id = prompt.model_id if prompt.model_id not in settings.MODEL_SIZE_MAP.values() or True else prompt.model_id
-    # The revision's model id wins; a size alias in the row resolved already in prompts.py.
+    model_id = prompt.model_id  # size aliases were resolved in prompts.py; the revision's id wins
     structured = STRUCTURED_OUTPUT_MODELS.get(definition.structured_output) if definition.structured_output else None
     agent = Agent(
         model=_model(model_id),

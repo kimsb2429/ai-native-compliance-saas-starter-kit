@@ -24,11 +24,11 @@ help:
 deploy:
 	terraform -chdir=$(TF_DIR) init
 	terraform -chdir=$(TF_DIR) apply -target=aws_ecr_repository.this -auto-approve -var image_tag=$(IMAGE_TAG) -var region=$(REGION)
-	scripts/build_image.sh
+	IMAGE_TAG=$(IMAGE_TAG) REGION=$(REGION) scripts/build_image.sh
 	terraform -chdir=$(TF_DIR) apply -auto-approve -var image_tag=$(IMAGE_TAG) -var region=$(REGION)
 
 image:
-	scripts/build_image.sh
+	IMAGE_TAG=$(IMAGE_TAG) REGION=$(REGION) scripts/build_image.sh
 
 seed:
 	uv run python scripts/seed.py

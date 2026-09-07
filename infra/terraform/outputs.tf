@@ -51,8 +51,20 @@ output "cognito_users" {
 }
 
 output "database_url" {
-  description = "Neon Postgres connection string."
+  description = "Owner connection string (migrations and seeding only)."
   value       = local.database_url
+  sensitive   = true
+}
+
+output "app_db_password" {
+  description = "Password scripts/seed.py sets on the kit_app runtime role."
+  value       = random_password.app_db.result
+  sensitive   = true
+}
+
+output "app_database_url" {
+  description = "Runtime (kit_app) connection string, as stored in SSM."
+  value       = local.app_database_url
   sensitive   = true
 }
 

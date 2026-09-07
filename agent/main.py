@@ -51,7 +51,19 @@ def _event_to_wire(event: dict) -> dict | None:
     return None
 
 
-async def _stream(built, prompt: str, started: float):
+async def _stream(built, prompt: str, started: float, who: tenant.Tenant):
+    # The framework iterates this generator in its own task, so the tenant
+    # ContextVar set in invoke() is not visible here. Set it again in this
+    # context and clear it when the stream ends.
+    token = tenant.activate(who)
+    try:
+        async for wire in _stream_events(built, prompt, started):
+            yield wire
+    finally:
+        tenant.deactivate(token)
+
+
+async def _stream_events(built, prompt: str, started: float):
     yield {"type": "start", "agent_ref": built.definition.agent_ref, "agent_version": built.definition.version,
            "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.prompt.model_id}
     last_tool = None
@@ -69,7 +81,7 @@ async def _stream(built, prompt: str, started: float):
 
 async def _collect(built, prompt: str, started: float) -> dict:
     text, tools, stop = [], [], None
-    async for wire in _stream(built, prompt, started):
+    async for wire in _stream_events(built, prompt, started):
         if wire["type"] == "text":
             text.append(wire["text"])
         elif wire["type"] == "tool_use":
@@ -86,7 +98,8 @@ async def _collect(built, prompt: str, started: float) -> dict:
 async def invoke(payload: dict, context: RequestContext | None = None):
     started = time.time()
     try:
-        who = tenant.tenant_from_bearer(_authorization(context))
+        # JWKS fetch on a cache miss is blocking HTTP; keep it off the event loop.
+        who = await asyncio.to_thread(tenant.tenant_from_bearer, _authorization(context))
     except tenant.TenantError as e:
         logger.warning("rejected: %s", e)
         return {"error": f"unauthorized: {e}"}
@@ -104,7 +117,7 @@ async def invoke(payload: dict, context: RequestContext | None = None):
         if not prompt:
             return {"error": "prompt is required"}
         if payload.get("stream", True):
-            return _stream(built, prompt, started)
+            return _stream(built, prompt, started, who)
         return await _collect(built, prompt, started)
     except LookupError as e:
         return {"error": str(e)}

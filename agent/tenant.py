@@ -52,8 +52,11 @@ def tenant_from_bearer(authorization: str | None) -> Tenant:
     if not authorization or not authorization.lower().startswith("bearer "):
         raise TenantError("missing bearer token")
     token = authorization.split(" ", 1)[1].strip()
+    if not settings.JWT_ISSUER or not settings.JWT_AUDIENCE:
+        # PyJWT skips the issuer check when issuer is None; never run that way.
+        raise TenantError("JWT_ISSUER and JWT_AUDIENCE must be configured")
     signing_key = _jwks().get_signing_key_from_jwt(token)
-    options = {"require": ["exp", "iat"], "verify_aud": settings.JWT_AUDIENCE is not None}
+    options = {"require": ["exp", "iat", "aud", "iss"]}
     claims = jwt.decode(
         token,
         signing_key.key,

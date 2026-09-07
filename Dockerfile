@@ -1,5 +1,6 @@
-# AgentCore Runtime container. AgentCore runs linux/arm64.
-FROM --platform=linux/arm64 public.ecr.aws/docker/library/python:3.12-slim
+# AgentCore Runtime container. AgentCore runs linux/arm64: scripts/build_image.sh
+# passes --platform linux/arm64 to buildx, so the platform is not pinned here.
+FROM public.ecr.aws/docker/library/python:3.12-slim
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN pip install --no-cache-dir uv && uv export --no-dev --no-hashes -o requirements.txt \

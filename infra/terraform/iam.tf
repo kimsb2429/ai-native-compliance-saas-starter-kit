@@ -69,6 +69,7 @@ data "aws_iam_policy_document" "runtime_permissions" {
       "logs:PutLogEvents",
       "logs:DescribeLogStreams",
       "logs:DescribeLogGroups",
+      "logs:PutResourcePolicy",
     ]
     resources = ["arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/bedrock-agentcore/runtimes/*"]
   }
@@ -135,8 +136,12 @@ data "aws_iam_policy_document" "runtime_permissions" {
   statement {
     sid    = "WorkloadIdentity"
     effect = "Allow"
+    # Deliberately no wildcard: GetWorkloadAccessTokenForUserId would let the
+    # runtime mint a token for any user id string with no IdP check, which
+    # defeats the JWT authorizer on the runtime.
     actions = [
-      "bedrock-agentcore:GetWorkloadAccessToken*",
+      "bedrock-agentcore:GetWorkloadAccessToken",
+      "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
     ]
     resources = [
       "arn:aws:bedrock-agentcore:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:workload-identity-directory/default",
