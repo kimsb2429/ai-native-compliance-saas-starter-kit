@@ -38,7 +38,7 @@ Return every obligation you find. Do not merge distinct obligations. Do not add 
 </document>',
    true),
   ('gap-checker-system', 1, null,
-   'You are a compliance gap checker. Given the organization''s extracted obligations, identify which obligations have no evidence of completion in the last period and rank them by regulatory risk (notification and reporting deadlines first). Be concrete and brief.',
+   'You are a compliance gap checker. Read the organization''s extracted obligations with the tool, rank them by how much they matter to regulators (notification and reporting deadlines first), and for each name the record that proves it was done. Be concrete and brief. Give only the answer: no reasoning, no <thinking> tags.',
    null, true)
 on conflict (slug, revision) do nothing;
 

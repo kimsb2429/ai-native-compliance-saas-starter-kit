@@ -4,6 +4,6 @@
   "_proves": "A3: inserting one agent_definitions row adds an agent; the running image is untouched",
   "_before_sql": "db/flows/06-insert-gap-checker.sql",
   "agent_ref": "gap-checker",
-  "prompt": "Which of our obligations carry the highest regulatory risk if we have no evidence for the last period? Rank the top three.",
+  "prompt": "Which three of our obligations matter most to regulators, and what record proves each one was done?",
   "stream": false
 }

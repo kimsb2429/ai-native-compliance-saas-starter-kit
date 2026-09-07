@@ -8,7 +8,7 @@ You get one runtime, one container image, one Postgres instance, two seeded tena
 
 ## Quickstart
 
-You need AWS credentials for an account with Bedrock model access to Claude Sonnet 4.5 and Claude Haiku 4.5 in us-east-1, a Neon API key stored in `NEON_API_KEY`, Terraform >= 1.6, Docker with buildx, uv, and Python 3.12. Run these commands:
+You need AWS credentials for an account with Amazon Bedrock enabled in us-east-1 (the defaults use Amazon Nova Pro and Nova 2 Lite, which need no extra approval; Claude models work once the account has submitted the Anthropic use-case form, by setting the two model variables), a Neon API key stored in `NEON_API_KEY`, Terraform >= 1.6, Docker with buildx, uv, and Python 3.12. Run these commands:
 
 ```bash
 make deploy
@@ -46,7 +46,7 @@ OCR is stubbed; documents are seeded as text; the lever is a Textract job on upl
 
 ## What it costs
 
-See docs/COST.md: about $0.05 per month idle, about $1.85 for a month with 100 invocations, with model tokens making up about 90 percent of the cost.
+See docs/COST.md: about $0.05 per month idle, about $0.59 for a month with 100 invocations on the Nova defaults, with model tokens making up about two thirds of the cost.
 
 ## About the engagement
 
