@@ -16,23 +16,17 @@ from agent.db import tenant_txn
 
 def make_tools(org_id: UUID, names: list[str]) -> list:
     @tool
-    def list_obligations(frequency: str | None = None) -> str:
-        """List this organization's compliance obligations, optionally filtered by frequency
-        (monthly, quarterly, semi-annual, annual, on-event, once, ongoing)."""
+    def list_obligations() -> str:
+        """List every compliance obligation extracted for this organization, one per line, with
+        its citation, frequency, requirement, responsible party, and due rule."""
+        # No filter parameter on purpose: the list is small, and a model that
+        # filters early misses the second half of a two-part question.
         with tenant_txn(org_id) as cur:
-            if frequency:
-                cur.execute(
-                    """select o.citation, o.requirement, o.frequency, o.responsible_party, o.due_rule, d.title
-                       from obligations o left join documents d on d.id = o.document_id
-                       where o.frequency = %s order by d.title, o.citation""",
-                    (frequency,),
-                )
-            else:
-                cur.execute(
-                    """select o.citation, o.requirement, o.frequency, o.responsible_party, o.due_rule, d.title
-                       from obligations o left join documents d on d.id = o.document_id
-                       order by d.title, o.citation"""
-                )
+            cur.execute(
+                """select o.citation, o.requirement, o.frequency, o.responsible_party, o.due_rule, d.title
+                   from obligations o left join documents d on d.id = o.document_id
+                   order by d.title, o.citation"""
+            )
             rows = cur.fetchall()
         if not rows:
             return "No obligations found for this organization."

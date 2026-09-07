@@ -41,6 +41,38 @@ def _authorization(context: RequestContext | None) -> str | None:
     return None
 
 
+class _ThinkingFilter:
+    """Drop <thinking>...</thinking> blocks some models (Amazon Nova) emit in text,
+    even when the tags straddle stream chunks."""
+
+    OPEN, CLOSE = "<thinking>", "</thinking>"
+
+    def __init__(self) -> None:
+        self.buf, self.inside = "", False
+
+    def feed(self, chunk: str) -> str:
+        self.buf += chunk
+        out = ""
+        while self.buf:
+            if self.inside:
+                j = self.buf.find(self.CLOSE)
+                if j < 0:
+                    return out
+                self.buf, self.inside = self.buf[j + len(self.CLOSE):], False
+                continue
+            i = self.buf.find(self.OPEN)
+            if i < 0:
+                # keep a partial "<thinki" tail in case the tag is split across chunks
+                k = self.buf.rfind("<")
+                if k >= 0 and self.OPEN.startswith(self.buf[k:]):
+                    out, self.buf = out + self.buf[:k], self.buf[k:]
+                    return out
+                out, self.buf = out + self.buf, ""
+                return out
+            out, self.buf, self.inside = out + self.buf[:i], self.buf[i + len(self.OPEN):], True
+        return out
+
+
 def _event_to_wire(event: dict) -> dict | None:
     """Reduce Strands stream events to a small, serializable vocabulary."""
     if "data" in event and isinstance(event["data"], str):
@@ -70,10 +102,16 @@ async def _stream_events(built, prompt: str, started: float):
     yield {"type": "start", "agent_ref": built.definition.agent_ref, "agent_version": built.definition.version,
            "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.model_id}
     last_tool = None
+    thinking = _ThinkingFilter()
     async for event in built.agent.stream_async(prompt):
         wire = _event_to_wire(event)
         if wire is None:
             continue
+        if wire["type"] == "text":
+            text = thinking.feed(wire["text"])
+            if not text:
+                continue
+            wire = {"type": "text", "text": text}
         if wire["type"] == "tool_use":
             if wire["name"] == last_tool:
                 continue
@@ -93,7 +131,7 @@ async def _collect(built, prompt: str, started: float) -> dict:
             stop = wire["stop_reason"]
     return {"agent_ref": built.definition.agent_ref, "agent_version": built.definition.version,
             "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.model_id,
-            "tools_used": tools, "stop_reason": stop, "text": "".join(text),
+            "tools_used": tools, "stop_reason": stop, "text": "".join(text).strip(),
             "elapsed_ms": int((time.time() - started) * 1000)}
 
 

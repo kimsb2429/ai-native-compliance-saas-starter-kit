@@ -21,16 +21,20 @@ variable "image_tag" {
   default     = "latest"
 }
 
+# Defaults are Amazon Nova because a fresh account can invoke them with no
+# extra approval. To use Claude, submit the Anthropic use-case form in the
+# Bedrock console, then set e.g. model_small = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+# and model_medium = "us.anthropic.claude-sonnet-4-5-20250929-v1:0".
 variable "model_small" {
-  description = "Bedrock model ID used for cheap/fast agent calls."
+  description = "Bedrock model ID for cheap/fast calls (extraction)."
   type        = string
-  default     = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+  default     = "us.amazon.nova-2-lite-v1:0"
 }
 
 variable "model_medium" {
-  description = "Bedrock model ID used for higher-quality agent calls."
+  description = "Bedrock model ID for higher-quality calls (the assistant)."
   type        = string
-  default     = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+  default     = "us.amazon.nova-pro-v1:0"
 }
 
 variable "budget_limit_usd" {

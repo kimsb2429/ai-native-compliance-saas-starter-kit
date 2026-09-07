@@ -24,5 +24,5 @@ def test_list_obligations_sees_only_own_rows(database_url):
                          "values (%s, %s, '2.1', 'Stack test each quarter', 'quarterly')", (ACME, doc))
     acme = {t.tool_name: t for t in make_tools(UUID(ACME), ["list_obligations"])}
     blue = {t.tool_name: t for t in make_tools(UUID(BLUE), ["list_obligations"])}
-    assert "Stack test each quarter" in acme["list_obligations"](frequency="quarterly")
+    assert "Stack test each quarter" in acme["list_obligations"]()
     assert "Stack test each quarter" not in blue["list_obligations"]()

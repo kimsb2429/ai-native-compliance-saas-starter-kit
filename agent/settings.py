@@ -17,8 +17,12 @@ load_dotenv()
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 logging.basicConfig(level=LOG_LEVEL, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
-MODEL_SMALL = os.getenv("MODEL_SMALL", "us.anthropic.claude-haiku-4-5-20251001-v1:0")
-MODEL_MEDIUM = os.getenv("MODEL_MEDIUM", "us.anthropic.claude-sonnet-4-5-20250929-v1:0")
+# Defaults are Amazon Nova because a fresh AWS account can call them with no
+# extra approval. Claude ids (e.g. us.anthropic.claude-sonnet-4-5-20250929-v1:0,
+# us.anthropic.claude-haiku-4-5-20251001-v1:0) work once the account has
+# submitted the Anthropic use-case form in the Bedrock console.
+MODEL_SMALL = os.getenv("MODEL_SMALL", "us.amazon.nova-2-lite-v1:0")
+MODEL_MEDIUM = os.getenv("MODEL_MEDIUM", "us.amazon.nova-pro-v1:0")
 MODEL_SIZE_MAP = {"small": MODEL_SMALL, "medium": MODEL_MEDIUM}
 
 GUARDRAIL_ID = os.getenv("GUARDRAIL_ID") or None

@@ -47,6 +47,9 @@ def main() -> None:
     session_id = f"kit-{uuid.uuid4()}-{uuid.uuid4().hex[:8]}"
     try:
         result = invoke(payload, id_token(payload["_tenant"], region), url, session_id)
+        if isinstance(result, dict) and "modelStreamErrorException" in str(result.get("error", "")):
+            print("  model stream error (transient); retrying once")
+            result = invoke(payload, id_token(payload["_tenant"], region), url, session_id)
     finally:
         if payload.get("_after_sql"):
             run_sql(payload["_after_sql"])
