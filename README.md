@@ -2,6 +2,26 @@
 
 This is a minimal, deployable, multi-tenant agent platform on Amazon Bedrock AgentCore Runtime, generic for permits, regulations, and policies. It is a case study of an engagement I built, reconstructed in my own words with no code from the engagement. It keeps three decisions from that engagement, each modernized, and proves each with a runnable payload.
 
+## How it fits together
+
+```mermaid
+flowchart LR
+    C["Client<br/>scripts/invoke.py"] -->|"1 sign in"| COG["Amazon Cognito<br/>user pool · custom:org_id"]
+    COG -->|"ID token"| C
+    C -->|"2 POST /invocations<br/>Bearer token + session id"| AC["Bedrock AgentCore Runtime<br/>JWT authorizer · microVM per session"]
+    AC -->|"3 verified token"| APP["agent/main.py<br/>tenant → ContextVar"]
+    APP --> B["agent/builder.py<br/>row → Strands Agent"]
+    B -->|"agent_definitions<br/>prompt_revisions"| PG[("Neon Postgres 17<br/>one pool · RLS · kit_app role")]
+    B --> M["Amazon Bedrock<br/>Nova Pro / Nova 2 Lite"]
+    M --- G["Bedrock Guardrail<br/>PII · denied topic · filters"]
+    B -->|"tools, bound to the tenant"| T["list_obligations<br/>get_document"]
+    T -->|"set_config(app.org_id) per txn"| PG
+    APP -->|"4 SSE or JSON"| C
+    SSM["SSM SecureString<br/>database_url"] -.->|"read at boot"| APP
+```
+
+Every box is created by `infra/terraform`. Tenant identity travels only as the verified `custom:org_id` claim; the request body never names a tenant. The three spine decisions live in the three middle boxes: the agent row (A3), the prompt revision (A26), and the one pool behind row-level security (B14).
+
 ## What you get
 
 You get one runtime, one container image, one Postgres instance, two seeded tenants (Acme Fabrication with an air quality operating permit, Blue Harbor Logistics with an industrial stormwater permit), two agents seeded (compliance-assistant, obligation-extractor), and a third added live in flow 06 (gap-checker). The kit includes six runnable flows, 22 tests that run against a local Postgres in Docker without AWS, and costs about $0 per month when idle.

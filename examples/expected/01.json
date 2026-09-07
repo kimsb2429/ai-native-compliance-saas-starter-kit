@@ -3,7 +3,7 @@
   "payload_file": "01-intake-extract-obligations.json",
   "tenant": "acme-user",
   "proves": "A3: the extractor is a row with a structured-output schema; one image serves it",
-  "recorded_at": "2026-09-07T22:46:59+00:00",
+  "recorded_at": "2026-09-07T22:48:33+00:00",
   "result": {
     "document_id": "8439a91f-2569-4557-830c-bfde9293c648",
     "title": "Air Quality Operating Permit AQ-2024-0117",
@@ -13,28 +13,28 @@
         "requirement": "Do not exceed 0.02 grains per dry standard cubic foot of particulate matter emissions from Stack S-1.",
         "frequency": "ongoing",
         "responsible_party": "Permittee",
-        "due_rule": "null"
+        "due_rule": null
       },
       {
         "citation": "1.2",
-        "requirement": "Do not exceed 24.5 tons of VOC emissions from the coating line in any rolling 12-month period.",
+        "requirement": "Do not exceed 24.5 tons of VOC emissions in any rolling 12-month period.",
         "frequency": "ongoing",
         "responsible_party": "Permittee",
-        "due_rule": "null"
+        "due_rule": null
       },
       {
         "citation": "2.1",
-        "requirement": "Conduct a performance (stack) test on Stack S-1 once every calendar quarter, using EPA Method 5, and submit results within 30 days of the test.",
+        "requirement": "Conduct a performance (stack) test on Stack S-1 using EPA Method 5 and submit results within 30 days of the test.",
         "frequency": "quarterly",
         "responsible_party": "Permittee",
         "due_rule": "within 30 days of the test"
       },
       {
         "citation": "2.2",
-        "requirement": "Inspect the wet scrubber on the coating line at least once every six months and record the pressure drop and liquid flow rate.",
+        "requirement": "Inspect the wet scrubber on the coating line and record the pressure drop and liquid flow rate.",
         "frequency": "semi-annual",
         "responsible_party": "Permittee",
-        "due_rule": "null"
+        "due_rule": null
       },
       {
         "citation": "2.3",
@@ -45,7 +45,7 @@
       },
       {
         "citation": "3.1",
-        "requirement": "Keep a monthly log of coating usage, VOC content of each coating, and calculated VOC emissions. The log shall be completed by the 10th day of the following month.",
+        "requirement": "Keep a monthly log of coating usage, VOC content of each coating, and calculated VOC emissions.",
         "frequency": "monthly",
         "responsible_party": "Permittee",
         "due_rule": "by the 10th day of the following month"
@@ -55,7 +55,7 @@
         "requirement": "Retain all records required by this permit on site for five years and make them available to the Department on request.",
         "frequency": "ongoing",
         "responsible_party": "Permittee",
-        "due_rule": "null"
+        "due_rule": null
       },
       {
         "citation": "4.1",
@@ -83,7 +83,7 @@
         "requirement": "The Environmental Manager is the responsible party for all notifications under this section.",
         "frequency": "on-event",
         "responsible_party": "Environmental Manager",
-        "due_rule": "null"
+        "due_rule": null
       },
       {
         "citation": "6.1",
@@ -97,7 +97,7 @@
         "requirement": "Obtain prior written approval for any change in process equipment that could increase emissions.",
         "frequency": "on-event",
         "responsible_party": "Permittee",
-        "due_rule": "prior to the change"
+        "due_rule": null
       }
     ],
     "count": 13,

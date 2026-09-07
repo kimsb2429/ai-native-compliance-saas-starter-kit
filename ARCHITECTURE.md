@@ -1,5 +1,7 @@
 # Architecture
 
+A one-picture version of this page is the diagram at the top of [README.md](README.md#how-it-fits-together).
+
 ## The request path
 
 1. A client signs in to Cognito and receives an ID token containing custom:org_id.
