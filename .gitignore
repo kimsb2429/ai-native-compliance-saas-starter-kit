@@ -1,0 +1,22 @@
+# secrets and local state
+.env
+.env.*
+!.env.example
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+# agentcore toolkit local state (contains real ARNs)
+.bedrock_agentcore.yaml
+.bedrock_agentcore/
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# local
+.DS_Store
+build/
+dist/
+*.log
