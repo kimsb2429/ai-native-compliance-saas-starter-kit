@@ -10,6 +10,7 @@ import http.server
 import json
 import os
 import pathlib
+import sys
 import threading
 import time
 import uuid
@@ -34,7 +35,10 @@ def database_url():
     with psycopg.connect(TEST_DB, autocommit=True) as conn:
         conn.execute(f'create database "{name}"')
     url = TEST_DB.rsplit("/", 1)[0] + "/" + name
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from seed import ensure_app_role
     with psycopg.connect(url, autocommit=True) as conn:
+        ensure_app_role(conn, "kit_app")
         conn.execute((ROOT / "db/schema.sql").read_text())
         conn.execute((ROOT / "db/seed.sql").read_text())
         for org, path, title in [
@@ -47,8 +51,6 @@ def database_url():
                              (org, title, (ROOT / path).read_text()))
     # The runtime role: plain LOGIN, NOBYPASSRLS. Superusers ignore RLS, so tests
     # exercise the same role the deployed agent uses.
-    with psycopg.connect(url, autocommit=True) as conn:
-        conn.execute("alter role kit_app password 'kit_app'")
     app_url = url.replace("//kit:kit@", "//kit_app:kit_app@")
     os.environ["DATABASE_URL"] = app_url
     yield app_url

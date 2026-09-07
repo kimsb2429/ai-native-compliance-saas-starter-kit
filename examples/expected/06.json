@@ -1,0 +1,20 @@
+{
+  "flow": "06",
+  "payload_file": "06-new-agent-row-gap-checker.json",
+  "tenant": "acme-user",
+  "proves": "A3: inserting one agent_definitions row adds an agent; the running image is untouched",
+  "recorded_at": "2026-09-07T22:47:29+00:00",
+  "result": {
+    "agent_ref": "gap-checker",
+    "agent_version": 1,
+    "prompt_slug": "gap-checker-system",
+    "prompt_revision": 1,
+    "model_id": "us.amazon.nova-pro-v1:0",
+    "tools_used": [
+      "list_obligations"
+    ],
+    "stop_reason": "end_turn",
+    "text": "1. **[Air Quality Operating Permit AQ-2024-0117 \u00a75.1]** Notify the Department by telephone within 24 hours of any malfunction that causes emissions to exceed a limit in Section 1, and in writing within 7 days. \u2014 **Record:** Notification log and written report.\n2. **[Air Quality Operating Permit AQ-2024-0117 \u00a74.1]** Submit an annual emissions inventory report to the Department by March 1 of each year, covering the previous calendar year. \u2014 **Record:** Annual emissions inventory report.\n3. **[Air Quality Operating Permit AQ-2024-0117 \u00a74.2]** Submit a semi-annual monitoring report by July 31 and January 31, summarizing all deviations from permit conditions. \u2014 **Record:** Semi-annual monitoring report.",
+    "elapsed_ms": 4255
+  }
+}

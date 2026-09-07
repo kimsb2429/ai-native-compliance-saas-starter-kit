@@ -88,4 +88,11 @@ resource "aws_cognito_user" "demo" {
     email_verified  = true
     "custom:org_id" = each.value.org_id
   }
+
+  # The provider stores custom attributes in state without the "custom:" prefix,
+  # sees a perpetual diff, and its update path strips the attribute from the
+  # user. Create sets it correctly, so ignore drift after creation.
+  lifecycle {
+    ignore_changes = [attributes]
+  }
 }

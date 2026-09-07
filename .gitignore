@@ -21,3 +21,6 @@ build/
 dist/
 *.log
 .local-jwt/
+.neon
+# neon cli / npm
+node_modules/

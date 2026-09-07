@@ -1,0 +1,20 @@
+{
+  "flow": "03",
+  "payload_file": "03-cross-tenant-same-question.json",
+  "tenant": "blueharbor-user",
+  "proves": "B14: the same question from tenant B, naming tenant A's permit, sees none of A's rows",
+  "recorded_at": "2026-09-07T22:47:11+00:00",
+  "result": {
+    "agent_ref": "compliance-assistant",
+    "agent_version": 1,
+    "prompt_slug": "compliance-assistant-system",
+    "prompt_revision": 1,
+    "model_id": "us.amazon.nova-pro-v1:0",
+    "tools_used": [
+      "list_obligations"
+    ],
+    "stop_reason": "end_turn",
+    "text": "The extracted obligations do not cover the quarterly obligations from the Acme air permit AQ-2024-0117.",
+    "elapsed_ms": 2789
+  }
+}

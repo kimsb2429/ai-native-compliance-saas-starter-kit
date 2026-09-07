@@ -15,6 +15,16 @@ variable "region" {
   default     = "us-east-1"
 }
 
+# Bring your own Postgres: set this (for example from `neon link`, which writes
+# DATABASE_URL_UNPOOLED to .env.local) and Terraform will not create a Neon
+# project. Leave it empty and Terraform creates one using NEON_API_KEY.
+variable "database_url" {
+  description = "Owner connection string of an existing Postgres. Empty = create a Neon project."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "image_tag" {
   description = "Tag of the agent container image in ECR to run on AgentCore Runtime."
   type        = string

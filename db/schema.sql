@@ -14,7 +14,7 @@
 --   * the owner/admin role runs this file and the seed (migrations);
 --   * kit_app is what the runtime connects as. It is a plain LOGIN role with
 --     NOBYPASSRLS. Superusers and BYPASSRLS roles ignore RLS entirely, so the
---     runtime must never hold one. scripts/seed.py sets kit_app's password.
+--     runtime must never hold one. scripts/seed.py creates kit_app.
 
 create table if not exists organizations (
   id          uuid primary key,
@@ -116,14 +116,10 @@ create unique index if not exists one_active_definition
   on agent_definitions (agent_ref, environment) where is_active;
 
 -- ---------------------------------------------------------------------------
--- The runtime role. Created here if missing; password set by scripts/seed.py.
+-- Grants for the runtime role. scripts/seed.py creates kit_app (LOGIN,
+-- NOBYPASSRLS) with a real password before running this file, because managed
+-- Postgres services reject placeholder passwords at CREATE ROLE time.
 -- ---------------------------------------------------------------------------
-do $$
-begin
-  if not exists (select 1 from pg_roles where rolname = 'kit_app') then
-    create role kit_app login nobypassrls nosuperuser nocreatedb nocreaterole password 'set-by-seed';
-  end if;
-end $$;
 grant usage on schema public to kit_app;
 grant select, insert, update, delete on all tables in schema public to kit_app;
 alter default privileges in schema public grant select, insert, update, delete on tables to kit_app;

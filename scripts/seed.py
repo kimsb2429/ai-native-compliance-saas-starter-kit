@@ -41,11 +41,22 @@ def app_password() -> str:
     return out.stdout.strip()
 
 
+def ensure_app_role(conn: psycopg.Connection, password: str) -> None:
+    """The runtime's role: plain LOGIN, NOBYPASSRLS. Created with its real password."""
+    exists = conn.execute("select 1 from pg_roles where rolname = 'kit_app'").fetchone()
+    if exists:
+        conn.execute(sql.SQL("alter role kit_app password {}").format(sql.Literal(password)))
+    else:
+        conn.execute(sql.SQL(
+            "create role kit_app login nobypassrls nosuperuser nocreatedb nocreaterole password {}"
+        ).format(sql.Literal(password)))
+
+
 def main() -> None:
     url = database_url()
     with psycopg.connect(url, autocommit=True) as conn:
+        ensure_app_role(conn, app_password())
         conn.execute((ROOT / "db/schema.sql").read_text())
-        conn.execute(sql.SQL("alter role kit_app password {}").format(sql.Literal(app_password())))
         conn.execute((ROOT / "db/seed.sql").read_text())
         for org_id, (path, title, kind) in DOCS.items():
             body = (ROOT / path).read_text()
@@ -56,7 +67,7 @@ def main() -> None:
                     conn.execute("insert into documents (org_id, title, kind, body) values (%s, %s, %s, %s)",
                                  (org_id, title, kind, body))
         n_docs = conn.execute("select count(*) from documents").fetchone()[0]
-    print(f"seeded: schema + prompts + agent rows; documents visible without tenant: {n_docs} (RLS hides them; expect 0)")
+    print(f"seeded: schema + prompts + agent rows + {n_docs} documents (the owner role may bypass RLS; the runtime role kit_app cannot)")
 
 
 if __name__ == "__main__":

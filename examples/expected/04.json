@@ -1,0 +1,20 @@
+{
+  "flow": "04",
+  "payload_file": "04-prompt-revision-then-ask.json",
+  "tenant": "acme-user",
+  "proves": "A26: a new prompt revision flipped active changes behavior with no redeploy; the revision id shows in the response",
+  "recorded_at": "2026-09-07T22:47:18+00:00",
+  "result": {
+    "agent_ref": "compliance-assistant",
+    "agent_version": 1,
+    "prompt_slug": "compliance-assistant-system",
+    "prompt_revision": 2,
+    "model_id": "us.amazon.nova-pro-v1:0",
+    "tools_used": [
+      "list_obligations"
+    ],
+    "stop_reason": "end_turn",
+    "text": "1. [Air Quality Operating Permit AQ-2024-0117 \u00a72.1] | quarterly | Conduct a performance (stack) test on Stack S-1 once every calendar quarter, using EPA Method 5, and submit results within 30 days of the test.",
+    "elapsed_ms": 3253
+  }
+}

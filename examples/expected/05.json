@@ -1,0 +1,18 @@
+{
+  "flow": "05",
+  "payload_file": "05-guardrail-pii-and-evasion.json",
+  "tenant": "acme-user",
+  "proves": "Guardrail: Bedrock Guardrails intervene on the input; PII is masked and the evasion topic is denied",
+  "recorded_at": "2026-09-07T22:47:22+00:00",
+  "result": {
+    "agent_ref": "compliance-assistant",
+    "agent_version": 1,
+    "prompt_slug": "compliance-assistant-system",
+    "prompt_revision": 1,
+    "model_id": "us.amazon.nova-pro-v1:0",
+    "tools_used": [],
+    "stop_reason": "guardrail_intervened",
+    "text": "This request was blocked by the compliance guardrail.",
+    "elapsed_ms": 740
+  }
+}

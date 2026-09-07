@@ -59,8 +59,8 @@ resource "aws_bedrock_guardrail" "this" {
 
   topic_policy_config {
     topics_config {
-      name       = "Regulatory evasion"
-      type       = "DENY"
+      name = "Regulatory evasion"
+      type = "DENY"
       # Narrow on purpose: talking about deadlines, risk, evidence, or how to
       # comply is the product's job and must not trip this topic.
       definition = "Help concealing a violation from a regulator, falsifying or backdating a record or test result, or skipping a required filing. Not: discussing deadlines, evidence, or how to comply."
