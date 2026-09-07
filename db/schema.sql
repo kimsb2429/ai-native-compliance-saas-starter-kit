@@ -70,9 +70,11 @@ create index if not exists documents_org       on documents (org_id);
 
 -- ---------------------------------------------------------------------------
 -- Prompt registry (A26, kit form). A slug names a prompt; revisions are
--- immutable rows; exactly one revision per slug is active. The model id rides
--- with the revision, so "swap the model" and "edit the prompt" are the same
--- kind of change: insert a row, flip is_active. No redeploy.
+-- immutable rows; exactly one revision per slug is active. A revision may
+-- carry a model id (a Bedrock id or the alias MODEL_SMALL / MODEL_MEDIUM);
+-- when it does, "swap the model" and "edit the prompt" are the same kind of
+-- change: insert a row, flip is_active. When it is null, the agent row's
+-- model_size decides. No redeploy either way.
 -- ---------------------------------------------------------------------------
 create table if not exists prompts (
   slug        text primary key,
@@ -82,7 +84,7 @@ create table if not exists prompts (
 create table if not exists prompt_revisions (
   slug          text not null references prompts(slug),
   revision      int  not null,
-  model_id      text not null,
+  model_id      text,                -- null = use the agent row's model_size; set = this revision overrides it
   system_text   text not null,
   user_template text,            -- optional; {{document}} style holes rendered by the app
   is_active     boolean not null default false,

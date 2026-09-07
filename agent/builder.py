@@ -40,6 +40,7 @@ class BuiltAgent:
     agent: Agent
     definition: AgentDefinition
     prompt: PromptRevision
+    model_id: str
 
 
 def load_definition(agent_ref: str, environment: str = settings.ENVIRONMENT) -> AgentDefinition:
@@ -80,7 +81,9 @@ def _model(model_id: str) -> BedrockModel:
 def build_agent(agent_ref: str, org_id: UUID, session_id: str) -> BuiltAgent:
     definition = load_definition(agent_ref)
     prompt = get_prompt(definition.prompt_slug)
-    model_id = prompt.model_id  # size aliases were resolved in prompts.py; the revision's id wins
+    # The agent row's model_size is the default (A3); a revision that names a
+    # model overrides it (A26), so a model swap can ship as a prompt revision.
+    model_id = prompt.model_id or settings.MODEL_SIZE_MAP[definition.model_size]
     structured = STRUCTURED_OUTPUT_MODELS.get(definition.structured_output) if definition.structured_output else None
     agent = Agent(
         model=_model(model_id),
@@ -100,4 +103,4 @@ def build_agent(agent_ref: str, org_id: UUID, session_id: str) -> BuiltAgent:
         "built agent %s v%s prompt=%s r%s model=%s tools=%s",
         definition.agent_ref, definition.version, prompt.slug, prompt.revision, model_id, definition.tools,
     )
-    return BuiltAgent(agent=agent, definition=definition, prompt=prompt)
+    return BuiltAgent(agent=agent, definition=definition, prompt=prompt, model_id=model_id)

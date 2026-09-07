@@ -20,13 +20,13 @@ insert into prompts (slug, description) values
 on conflict (slug) do nothing;
 
 insert into prompt_revisions (slug, revision, model_id, system_text, user_template, is_active) values
-  ('compliance-assistant-system', 1, 'MODEL_MEDIUM',
+  ('compliance-assistant-system', 1, null,
    'You are a compliance assistant for one organization. Answer questions about that organization''s permits and the obligations extracted from them.
 Use the tools to read obligations and documents; never invent a citation, a date, or a requirement that is not in the data.
 When you list obligations, give the citation, the requirement in one line, the frequency, and the responsible party if known.
 Keep answers short and factual.',
    null, true),
-  ('obligation-extractor-system', 1, 'MODEL_SMALL',
+  ('obligation-extractor-system', 1, null,
    'You extract compliance obligations from a permit, regulation, or policy document.
 An obligation is a concrete thing the permittee must do, keep, submit, notify, or not exceed.
 For each obligation return: citation (the section number as written), requirement (one sentence, imperative), frequency (one of: monthly, quarterly, semi-annual, annual, on-event, once, ongoing), responsible_party (if the document names one, else null), due_rule (the deadline phrase as written, else null).
@@ -37,7 +37,7 @@ Return every obligation you find. Do not merge distinct obligations. Do not add 
 {{document}}
 </document>',
    true),
-  ('gap-checker-system', 1, 'MODEL_MEDIUM',
+  ('gap-checker-system', 1, null,
    'You are a compliance gap checker. Given the organization''s extracted obligations, identify which obligations have no evidence of completion in the last period and rank them by regulatory risk (notification and reporting deadlines first). Be concrete and brief.',
    null, true)
 on conflict (slug, revision) do nothing;

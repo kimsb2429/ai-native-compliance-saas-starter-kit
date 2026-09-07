@@ -3,7 +3,8 @@
 Request contract (JSON body):
   agent_ref    which agent_definitions row to build           required
   prompt       the user message (chat agents)                  required unless extractor
-  document_id  which document to read (extractor / assistant)  optional
+  document_id  which document to extract (extractor only; the assistant reads
+               documents through its own get_document tool)      optional
   stream       true -> SSE events, false -> one JSON object     default true
 
 Tenant identity is NOT in the body. It comes from the verified bearer token
@@ -17,7 +18,9 @@ import asyncio
 import logging
 import time
 
+import psycopg
 from bedrock_agentcore import BedrockAgentCoreApp
+from psycopg_pool import PoolTimeout
 from bedrock_agentcore.runtime.context import RequestContext
 
 from agent import settings, tenant
@@ -65,7 +68,7 @@ async def _stream(built, prompt: str, started: float, who: tenant.Tenant):
 
 async def _stream_events(built, prompt: str, started: float):
     yield {"type": "start", "agent_ref": built.definition.agent_ref, "agent_version": built.definition.version,
-           "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.prompt.model_id}
+           "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.model_id}
     last_tool = None
     async for event in built.agent.stream_async(prompt):
         wire = _event_to_wire(event)
@@ -89,7 +92,7 @@ async def _collect(built, prompt: str, started: float) -> dict:
         elif wire["type"] == "end":
             stop = wire["stop_reason"]
     return {"agent_ref": built.definition.agent_ref, "agent_version": built.definition.version,
-            "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.prompt.model_id,
+            "prompt_slug": built.prompt.slug, "prompt_revision": built.prompt.revision, "model_id": built.model_id,
             "tools_used": tools, "stop_reason": stop, "text": "".join(text),
             "elapsed_ms": int((time.time() - started) * 1000)}
 
@@ -121,6 +124,9 @@ async def invoke(payload: dict, context: RequestContext | None = None):
         return await _collect(built, prompt, started)
     except LookupError as e:
         return {"error": str(e)}
+    except (psycopg.Error, PoolTimeout) as e:
+        logger.exception("database unavailable")
+        return {"error": f"database unavailable: {type(e).__name__}"}
     finally:
         tenant.deactivate(token)
 

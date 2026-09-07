@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class PromptRevision:
     slug: str
     revision: int
-    model_id: str
+    model_id: str | None   # resolved Bedrock id, or None = defer to the agent row's model_size
     system_text: str
     user_template: str | None
 
@@ -40,8 +40,10 @@ _cache: dict[str, tuple[float, PromptRevision]] = {}
 _last_good: dict[str, PromptRevision] = {}
 
 
-def _resolve_model(model_id: str) -> str:
-    """Allow a revision to name a size alias (MODEL_SMALL/MODEL_MEDIUM) or a real id."""
+def _resolve_model(model_id: str | None) -> str | None:
+    """A revision may name a size alias (MODEL_SMALL/MODEL_MEDIUM), a real id, or nothing."""
+    if model_id is None:
+        return None
     return {"MODEL_SMALL": settings.MODEL_SMALL, "MODEL_MEDIUM": settings.MODEL_MEDIUM}.get(model_id, model_id)
 
 

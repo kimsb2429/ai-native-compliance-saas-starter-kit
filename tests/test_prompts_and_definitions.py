@@ -2,7 +2,7 @@
 
 import psycopg
 
-from agent import prompts
+from agent import prompts, settings
 from agent.builder import load_definition
 
 
@@ -10,7 +10,7 @@ def test_active_revision_resolves_and_caches(database_url):
     prompts.invalidate()
     rev = prompts.get_prompt("compliance-assistant-system")
     assert rev.revision == 1 and "compliance assistant" in rev.system_text
-    assert rev.model_id.startswith("us.") or rev.model_id.startswith("global.")
+    assert rev.model_id is None  # seeded revisions defer to the agent row's model_size
 
 
 def test_flipping_active_revision_changes_the_prompt_without_redeploy(database_url):
@@ -23,6 +23,7 @@ def test_flipping_active_revision_changes_the_prompt_without_redeploy(database_u
     prompts.invalidate("compliance-assistant-system")
     rev = prompts.get_prompt("compliance-assistant-system")
     assert rev.revision == 2 and rev.system_text.startswith("REVISED")
+    assert rev.model_id == settings.MODEL_SMALL  # a revision may carry the model
     # restore
     with psycopg.connect(database_url, autocommit=True) as conn:
         with conn.transaction():
