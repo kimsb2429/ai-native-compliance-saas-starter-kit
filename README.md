@@ -24,7 +24,7 @@ Every box is created by `infra/terraform`. Tenant identity travels only as the v
 
 ## What you get
 
-You get one runtime, one container image, one Postgres instance, two seeded tenants (Acme Fabrication with an air quality operating permit, Blue Harbor Logistics with an industrial stormwater permit), two agents seeded (compliance-assistant, obligation-extractor), and a third added live in flow 06 (gap-checker). The kit includes six runnable flows, 22 tests that run against a local Postgres in Docker without AWS, and costs about $0 per month when idle.
+You get one runtime, one container image, one Postgres instance, two seeded tenants (Acme Fabrication with an air quality operating permit, Blue Harbor Logistics with an industrial stormwater permit), two agents seeded (compliance-assistant, obligation-extractor), and a third added live in flow 06 (gap-checker). The kit includes six runnable flows, 26 tests that run against a local Postgres in Docker without AWS, and costs about $0 per month when idle.
 
 ## Quickstart
 
@@ -84,6 +84,6 @@ infra/terraform/  Neon project, Cognito, ECR, IAM role, Bedrock Guardrail, SSM,
 examples/         payloads/ (the six flows), documents/ (two permits), expected/ (recorded)
 docs/             decisions/ (A3, A26, B14), flows/ (one page per flow), COST.md
 scripts/          seed.py, invoke.py, demo.py, build_image.sh
-tests/            22 tests against a local Postgres; no AWS needed
+tests/            26 tests against a local Postgres; no AWS needed
 ARCHITECTURE.md   the request path, every component and why, what is not here
 ```
