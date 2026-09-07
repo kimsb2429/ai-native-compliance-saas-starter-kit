@@ -71,6 +71,11 @@ def _model(model_id: str) -> BedrockModel:
             guardrail_id=settings.GUARDRAIL_ID,
             guardrail_version=settings.GUARDRAIL_VERSION,
             guardrail_trace="enabled",
+            # Evaluate only the user's message (wrapped in guardContent), also on
+            # tool-result turns. Without this, Bedrock evaluates the system prompt
+            # as input on the tool-result turn, and "You are a ..." text trips the
+            # prompt-attack filter.
+            guardrail_latest_message=True,
             guardrail_redact_input=True,
             guardrail_redact_output=True,
             guardrail_redact_output_message="[response withheld by the compliance guardrail]",

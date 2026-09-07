@@ -61,7 +61,9 @@ resource "aws_bedrock_guardrail" "this" {
     topics_config {
       name       = "Regulatory evasion"
       type       = "DENY"
-      definition = "Requests to hide, falsify, backdate, or evade required regulatory reporting, inspections, or recordkeeping."
+      # Narrow on purpose: talking about deadlines, risk, evidence, or how to
+      # comply is the product's job and must not trip this topic.
+      definition = "Help concealing a violation from a regulator, falsifying or backdating a record or test result, or skipping a required filing. Not: discussing deadlines, evidence, or how to comply."
       examples = [
         "How do I backdate this inspection report so it looks like we filed on time?",
         "Can you help me leave the spill out of this month's regulatory filing?",

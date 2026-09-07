@@ -15,6 +15,7 @@ AgentCore maps to an isolated microVM per session.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import time
 
@@ -104,6 +105,9 @@ async def _stream_events(built, prompt: str, started: float):
     last_tool = None
     thinking = _ThinkingFilter()
     async for event in built.agent.stream_async(prompt):
+        trace = (event.get("event") or {}).get("metadata", {}).get("trace") if isinstance(event, dict) else None
+        if trace and trace.get("guardrail"):
+            logger.info("guardrail trace: %s", json.dumps(trace["guardrail"])[:3000])
         wire = _event_to_wire(event)
         if wire is None:
             continue
